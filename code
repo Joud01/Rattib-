@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>رتّب</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f5f0;
+      color: #1a1a1a;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    .app {
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .header {
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 26px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 6px;
+    }
+
+    .header p {
+      font-size: 14px;
+      color: #777;
+    }
+
+    .card {
+      background: #ffffff;
+      border: 1px solid #e5e5e0;
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    label {
+      font-size: 13px;
+      color: #555;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 130px;
+      resize: none;
+      border: 1px solid #e5e5e0;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 14px;
+      font-family: inherit;
+      color: #1a1a1a;
+      background: #fafafa;
+      line-height: 1.7;
+    }
+
+    textarea:focus { outline: none; border-color: #aaa; }
+
+    .options {
+      display: flex;
+      gap: 12px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    .opt-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      flex: 1;
+      min-width: 140px;
+    }
+
+    select {
+      width: 100%;
+      border: 1px solid #e5e5e0;
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-family: inherit;
+      color: #1a1a1a;
+      background: #fafafa;
+    }
+
+    .btn-main {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      background: #1a1a1a;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      margin-top: 1rem;
+      font-family: inherit;
+      transition: opacity 0.15s;
+    }
+
+    .btn-main:hover { opacity: 0.85; }
+    .btn-main:active { transform: scale(0.98); }
+    .btn-main:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .result-area { display: none; }
+    .result-area.show { display: block; }
+
+    .result-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .result-header h2 {
+      font-size: 17px;
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+
+    .badge {
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 8px;
+      background: #eef2ff;
+      color: #3730a3;
+      font-weight: 500;
+    }
+
+    .summary-card {
+      background: #f9f9f6;
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.25rem;
+      font-size: 14px;
+      color: #555;
+      line-height: 1.7;
+      border-right: 3px solid #1a1a1a;
+    }
+
+    .task-card {
+      background: #ffffff;
+      border: 1px solid #e5e5e0;
+      border-radius: 14px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .task-num {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .p-high { background: #fef3f0; color: #b91c1c; }
+    .p-med  { background: #fffbeb; color: #92400e; }
+    .p-low  { background: #f0fdf4; color: #166534; }
+
+    .task-content { flex: 1; }
+
+    .task-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 4px;
+    }
+
+    .task-meta {
+      font-size: 12px;
+      color: #888;
+    }
+
+    .task-tip {
+      font-size: 12px;
+      color: #777;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid #f0f0ec;
+      font-style: italic;
+    }
+
+    .priority-label {
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 8px;
+      flex-shrink: 0;
+      font-weight: 500;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 2rem;
+      color: #888;
+      font-size: 14px;
+      display: none;
+    }
+
+    .loading.show { display: block; }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    .spin {
+      display: inline-block;
+      animation: spin 1s linear infinite;
+      font-size: 24px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app">
+
+  <div class="header">
+    <h1>🗓️ رتّب</h1>
+    <p>مساعدك الذكي لتنظيم يومك</p>
+  </div>
+
+  <div class="card">
+    <label>اكتب مهامك اليوم (كل مهمة في سطر)</label>
+    <textarea id="tasksInput" placeholder="مثال:
+مراجعة الفصل الأول للاختبار
+تمرين رياضي
+رد على رسائل العمل
+طبخ الغداء
+قراءة 20 صفحة"></textarea>
+
+    <div class="options">
+      <div class="opt-group">
+        <label>وقتك المتاح</label>
+        <select id="timeAvail">
+          <option value="4">4 ساعات</option>
+          <option value="6" selected>6 ساعات</option>
+          <option value="8">8 ساعات</option>
+          <option value="10">10 ساعات</option>
+        </select>
+      </div>
+      <div class="opt-group">
+        <label>طاقتك الحين</label>
+        <select id="energy">
+          <option value="low">منخفضة 🌧</option>
+          <option value="medium" selected>متوسطة ⛅</option>
+          <option value="high">عالية ☀️</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="btn-main" id="mainBtn" onclick="analyzeTasks()">
+      ✨ رتّب يومي بالذكاء الاصطناعي
+    </button>
+  </div>
+
+  <div class="loading" id="loading">
+    <span class="spin">⏳</span>
+    <p style="margin-top: 10px;">الذكاء الاصطناعي يحلل مهامك...</p>
+  </div>
+
+  <div class="result-area" id="resultArea">
+    <div class="result-header">
+      <h2>جدول يومك المقترح</h2>
+      <span class="badge" id="taskCount"></span>
+    </div>
+    <div class="summary-card" id="summaryCard"></div>
+    <div id="tasksList"></div>
+  </div>
+
+</div>
+
+<script>
+  const API_KEY = 'YOUR_API_KEY_HERE'; // ← ضعي مفتاح Anthropic هنا
+
+  async function analyzeTasks() {
+    const tasks = document.getElementById('tasksInput').value.trim();
+    const time  = document.getElementById('timeAvail').value;
+    const energy = document.getElementById('energy').value;
+
+    if (!tasks) { alert('اكتبي مهامك أولاً!'); return; }
+
+    document.getElementById('loading').classList.add('show');
+    document.getElementById('resultArea').classList.remove('show');
+    document.getElementById('mainBtn').disabled = true;
+
+    const energyLabel = energy === 'high' ? 'عالية' : energy === 'medium' ? 'متوسطة' : 'منخفضة';
+
+    const prompt = `أنت مساعد تخطيط يومي ذكي. المستخدم لديه ${time} ساعات متاحة وطاقته ${energyLabel}.
+
+مهامه:
+${tasks}
+
+قم بتحليل المهام وإرجاع JSON فقط بهذا الشكل بدون أي نص إضافي:
+{
+  "summary": "جملة تشجيعية قصيرة عن يومه",
+  "tasks": [
+    {
+      "title": "اسم المهمة",
+      "priority": "high أو medium أو low",
+      "duration": "مدة مقترحة مثل 45 دقيقة",
+      "time": "وقت مقترح مثل 9:00 ص",
+      "tip": "نصيحة قصيرة جداً"
+    }
+  ]
+}
+
+رتب المهام من الأعلى أولوية للأقل. اعتمد على طاقة المستخدم في توزيع المهام الثقيلة.`;
+
+    try {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': API_KEY,
+          'anthropic-version': '2023-06-01'
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1000,
+          messages: [{ role: 'user', content: prompt }]
+        })
+      });
+
+      const data = await res.json();
+      const text = data.content.map(i => i.text || '').join('');
+      const clean = text.replace(/```json|```/g, '').trim();
+      const parsed = JSON.parse(clean);
+
+      renderResult(parsed);
+
+    } catch (err) {
+      alert('في مشكلة تقنية، حاولي مرة ثانية');
+      console.error(err);
+    } finally {
+      document.getElementById('loading').classList.remove('show');
+      document.getElementById('mainBtn').disabled = false;
+    }
+  }
+
+  function renderResult(data) {
+    document.getElementById('summaryCard').textContent = data.summary;
+    document.getElementById('taskCount').textContent = data.tasks.length + ' مهام';
+
+    const list = document.getElementById('tasksList');
+    list.innerHTML = '';
+
+    data.tasks.forEach((task, i) => {
+      const pClass = task.priority === 'high' ? 'p-high' : task.priority === 'medium' ? 'p-med' : 'p-low';
+      const pLabel = task.priority === 'high' ? 'أولوية عالية' : task.priority === 'medium' ? 'متوسطة' : 'منخفضة';
+      const pBg    = task.priority === 'high' ? '#fef3f0' : task.priority === 'medium' ? '#fffbeb' : '#f0fdf4';
+      const pColor = task.priority === 'high' ? '#b91c1c' : task.priority === 'medium' ? '#92400e' : '#166534';
+
+      list.innerHTML += `
+        <div class="task-card">
+          <div class="task-num ${pClass}">${i + 1}</div>
+          <div class="task-content">
+            <div class="task-title">${task.title}</div>
+            <div class="task-meta">⏰ ${task.time} &nbsp;·&nbsp; ${task.duration}</div>
+            ${task.tip ? `<div class="task-tip">💡 ${task.tip}</div>` : ''}
+          </div>
+          <span class="priority-label" style="background:${pBg};color:${pColor}">${pLabel}</span>
+        </div>`;
+    });
+
+    document.getElementById('resultArea').classList.add('show');
+    document.getElementById('resultArea').scrollIntoView({ behavior: 'smooth' });
+  }
+</script>
+
+</body>
+</html>
